@@ -176,7 +176,7 @@
 
   //-------------------------------------------These functions detect when the ball hits the paddle---------------------------------
 
-  function TouchLeft(thing1, thing2) { //touching left paddle?
+  function TouchLeft(thing1, thing2) { //touching left paddle? Thing1 will be the paddle, thing2 is the ball
     // This function detects whether two MySprites are touching - very useful function
     if (
       thing2.y >= thing1.y && thing2.y <= (thing1.y + paddleHeight) && thing2.x <= (0 + ballRadius)) {
@@ -185,7 +185,7 @@
     return false;
   }
 
-  function TouchRight(thing1, thing2) { //touching right paddle?
+  function TouchRight(thing1, thing2) { //touching right paddle? Thing1 will be the paddle, thing2 is the ball
     if (
       thing2.y >= thing1.y && thing2.y <= (thing1.y + paddleHeight) && thing2.x >= (myCanvas.width - paddleWidth - ballRadius)) {
       return true;
