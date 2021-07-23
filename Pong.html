@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pong Game</title>
+</head>
+
+<body>
+
+  <div class="jumbtron">
+    <div class="container">
+      <div class="text-center">
+        <div class="intro" id="theIntro">
+          <h1>Welcome to my Pong game!!!</h1>
+          <h4> Want to play? First to 5 games wins. Press the button below</h4>
+          <img src="https://www.cityam.com/wp-content/uploads/2019/07/Screen-Shot-2019-07-24-at-18.31.17.png"
+            alt="" width="300" height="300">
+          <br>
+          <br>
+          <button class="btn btn-primary btn-lg" onclick="clearIntro()">Click to start</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="jumbtron">
+    <div class="container">
+      <div class="text-center">
+        <div id="difficultyLevel"><br>
+          <h2>What level would you like to play at?</h2>
+          <br>
+          <br>
+          <button class="btn btn-primary btn-lg" onclick="easyLevel()">Easy Level</button>
+          <br>
+          <BR>
+          <button class="btn btn-primary btn-lg" onclick="hardLevel()">Hard Level</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="main">
+    <h1>Let's Play!!!</h1>
+    <canvas id="myCanvas" width=100 height=400
+      style="background:url('https://raw.githubusercontent.com/dphillips62/2021TECCARImages/main/DPHPongBackground.png'); background-size: cover">
+    </canvas>
+    <br>
+    <br>
+    <button onclick="startGame()">Return to Main Menu</button>
+  </div>
+
+  <style>
+    #myCanvas {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+    integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+</body>
+
+<script>
+  //----------Set up the variables used in the game--------------------------------------------------------------
+
+  var ctx = myCanvas.getContext("2d"); // Get the drawing context for the canvas
+  var FPS = 40; // How many frames per second
+  var rightScore = 0;
+  var leftScore = 0;
+  var game_over = false;
+  var matchOver = false;
+  var winner = false;
+  var wPressed = false;
+  var sPressed = false;
+  var upArrowPressed = false;
+  var downArrowPressed = false;
+  var paddleHeight = 100;
+  var paddleWidth = 20
+  var ballRadius = 25
+  var mySound;
+  var gameSpeed = 0;
+
+  const paddleHit = new Audio('Boing.mp3');
+  const wallHit = new Audio('DrumBass.mp3');
+  const oops = new Audio('Oops.mp3');
+
+  var introDiv = document.getElementById("theIntro")
+  var main = document.getElementById("main")
+  var diffLevel = document.getElementById("difficultyLevel")
+
+
+  //---------------This runs automatically when the page loads------------------------------------------------------
+
+  document.body.onload = function () {
+    main.style.display = "none"
+    diffLevel.style.display = "none"
+  }
+
+  //------------Template for the paddles--------------------------------------------------------------------------
+  function paddles(img_url) {
+    this.x = 0;
+    this.y = ((window.innerHeight / 2) - (paddleHeight / 2));
+    this.visible = true;
+    this.MyImg = new Image();
+    this.MyImg.src = img_url;
+  }
+
+  //------------Template for the ball----------------------------------------------------------------------------
+  function MyBall(img_url) {
+    this.x = (window.innerWidth / 2) - ballRadius - 20;
+    this.y = (window.innerHeight / 2) - ballRadius;
+    this.visible = true;
+    this.velocity_x = 0;
+    this.velocity_y = 0;//
+    this.MyImg = new Image();
+    this.MyImg.src = img_url;
+  }
+
+  //------------Get the images from Git Hub nd assign them using the templates above-----------------------------------------
+
+  var leftPaddle = new paddles(
+    "https://raw.githubusercontent.com/dphillips62/2021TECCARImages/main/Paddle.png"
+  ); // The paddle
+  var rightPaddle = new paddles(
+    "https://raw.githubusercontent.com/dphillips62/2021TECCARImages/main/Paddle.png"
+  );
+  // The ball
+  var theBall = new MyBall(
+    "https://raw.githubusercontent.com/dphillips62/2021TECCARImages/main/SoccerBall.png"
+  );
+
+
+  //-------------Show and hide divs for intro, difficulty levels and main game--------------------------------------------------------
+
+  function startGame() {
+    introDiv.style.display = "block" //shows the div
+    main.style.display = "none" //hides the div
+  }
+
+  function clearIntro() {
+    introDiv.style.display = "none"
+    diffLevel.style.display = "block"
+    main.style.display = "none"
+  }
+  // these functions run when the buttons are pressed and they change the size of ball, paddle size and speed of ball.
+
+  function easyLevel() {
+    introDiv.style.display = "none"
+    diffLevel.style.display = "none"
+    main.style.display = "block"
+    paddleHeight = 100;
+    paddleWidth = 20;
+    ballRadius = 30;
+    gameSpeed = 8;
+    restart_game();
+  }
+
+  function hardLevel() {
+    introDiv.style.display = "none"
+    diffLevel.style.display = "none"
+    main.style.display = "block"
+    paddleHeight = 50;
+    paddleWidth = 20;
+    ballRadius = 20;
+    gameSpeed = 15;
+    restart_game();
+  }
+
+  //-------------------------------------------These functions detect when the ball hits the paddle---------------------------------
+
+  function TouchLeft(thing1, thing2) { //touching left paddle?
+    // This function detects whether two MySprites are touching - very useful function
+    if (
+      thing2.y >= thing1.y && thing2.y <= (thing1.y + paddleHeight) && thing2.x <= (0 + ballRadius)) {
+      return true;
+    }
+    return false;
+  }
+
+  function TouchRight(thing1, thing2) { //touching right paddle?
+    if (
+      thing2.y >= thing1.y && thing2.y <= (thing1.y + paddleHeight) && thing2.x >= (myCanvas.width - paddleWidth - ballRadius)) {
+      return true;
+    }
+    return false;
+  }
+  //----------Functions to show score, restart game and bring up the game over text-----------------------------------------
+
+  function restart_game() {
+    game_over = false; // not over yet
+    matchOver = false;
+    theBall.velocity_x = Math.ceil((Math.random() * gameSpeed) + 2) * (Math.round(Math.random()) ? 1 : -1)
+    theBall.velocity_y = Math.ceil((Math.random() * gameSpeed) + 2) * (Math.round(Math.random()) ? 1 : -1)
+    theBall.x = (window.innerWidth / 2) - ballRadius - 20;
+    theBall.y = (window.innerHeight / 2) - ballRadius;
+  }
+
+  function ShowScore() { //Shows the scores at the top of the screen
+    ctx.fillStyle = "red";
+    ctx.font = "14px Arial";
+    ctx.fillText("Score: " + leftScore, 0 + 20, 15);
+    ctx.fillText("Score: " + rightScore, (window.innerWidth / 2) + 20, 15);
+  }
+
+  function ShowGameOver() { //shows the game over text
+    ctx.fillStyle = "red";
+    ctx.font = "bold 50px Arial";
+    ctx.textAlign = "center";
+    ctx.fillText("Game Over", myCanvas.width / 2, myCanvas.height / 2);
+    ctx.font = "bold 20px Arial";
+    ctx.fillText(
+      "Press SpaceBar to play again or M for Main Menu",
+      myCanvas.width / 2,
+      myCanvas.height / 2 + 50
+    );
+    ctx.textAlign = "left";
+  }
+
+  function winnerMessage(playerside) { //shows the winner text
+    ctx.fillStyle = "red";
+    ctx.font = "bold 50px Arial";
+    ctx.textAlign = "center";
+    if (playerside == "Left") {
+      ctx.fillText("Winner!!! Left Paddle was the first to five!", myCanvas.width / 2, myCanvas.height / 2);
+    } else {
+      ctx.fillText("Winner!!! Right Paddle was the first to five!", myCanvas.width / 2, myCanvas.height / 2);
+    }
+    ctx.font = "bold 20px Arial";
+    ctx.fillText(
+      "Press SpaceBar to play again or M for Main Menu",
+      myCanvas.width / 2,
+      myCanvas.height / 2 + 50
+    );
+    ctx.textAlign = "left";
+    leftScore = 0;
+    rightScore = 0;
+  }
+  //This function below runs at 40 fps - it calls lots of functions to show score, check for ball hitting paddles, play sounds and redraw the paddles and ball
+
+  function Do_a_Frame() {
+
+    ctx.canvas.width = window.innerWidth - 50;
+    ctx.canvas.height = window.innerHeight - 50;
+    ctx.clearRect(0, 0, myCanvas.width, myCanvas.height); // clear the background
+    ShowScore(); // show the score
+
+    if (matchOver) { //first check if the game is over or the match is over. Someone has a score of 5
+      ShowScore();
+      if (leftScore == 5) {
+        winnerMessage("Left"); //takes you to a function which shows the winner message for the left paddle
+      } else {
+        winnerMessage("Right"); //takes you to a function which shows the winner message for the right paddle
+      }
+    } else if (game_over) { //else if the game is over but no-one has reached 5 games
+      ShowScore();
+      ShowGameOver();
+    } else {
+
+      leftPaddle.x = 10; // ensure left paddle always at the left
+      rightPaddle.x = myCanvas.width - paddleWidth - 10; //ensure right paddle is always against the right hand side of screen
+
+      if (wPressed && leftPaddle.y > 0) {
+        leftPaddle.y = leftPaddle.y - 15; //if user has pressed w - left paddle goes up
+      }
+      if (sPressed && leftPaddle.y < (myCanvas.height - paddleHeight)) {
+        leftPaddle.y = leftPaddle.y + 15; //if user has pressed s - left paddle goes down
+      }
+      if (upArrowPressed && rightPaddle.y > 0) {
+        rightPaddle.y = rightPaddle.y - 15; //if user has pressed uparrow - right paddle goes up
+      }
+      if (downArrowPressed && rightPaddle.y < (myCanvas.height - paddleHeight)) {
+        rightPaddle.y = rightPaddle.y + 15; //if user has pressed downarrow - right paddle goes down
+      }
+
+      if (theBall.y < 0 || theBall.y >= myCanvas.height - ballRadius) { //bounce off the top or bottom
+        theBall.velocity_y = -theBall.velocity_y;
+        wallHit.play();
+      }
+
+      if (TouchLeft(leftPaddle, theBall)) {
+        theBall.velocity_x = -theBall.velocity_x; //bounce off the left paddle
+        paddleHit.play()
+      } else {
+        if (theBall.x < 0) { //if the ball goes off the left side of screen
+          rightScore++
+          if (rightScore == 5) {
+            matchOver = true
+          }
+          game_over = true
+          oops.play()
+        }
+      }
+      if (TouchRight(rightPaddle, theBall)) { //bounce off the right paddle
+        theBall.velocity_x = -theBall.velocity_x;
+        paddleHit.play()
+      } else {
+        if (theBall.x > myCanvas.width) { //if the ball goes off the right side of screen
+          leftScore++
+          if (leftScore == 5) {
+            matchOver = true
+          }
+          game_over = true
+          oops.play()
+        }
+      }
+
+      //these call the functions that move the paddles and ball
+      leftPaddle.Do_Paddle_Things();
+      rightPaddle.Do_Paddle_Things();
+      theBall.Do_Ball_Things();
+    }
+  }
+
+  //----------These draw the paddles and ball--------------------------------------------------------------------------
+
+  paddles.prototype.Do_Paddle_Things = function () {
+    if (this.visible) ctx.drawImage(this.MyImg, this.x, this.y, paddleWidth, paddleHeight); // draw the thing
+  };
+
+  MyBall.prototype.Do_Ball_Things = function () {
+    if (this.visible) ctx.drawImage(this.MyImg, this.x, this.y, ballRadius, ballRadius); // draw the thing
+    this.x = this.x + this.velocity_x;
+    this.y = this.y + this.velocity_y; // move the thing
+  };
+
+
+
+  //---These run as soon as the game loads---------------------------------------------------------------------------------
+
+
+  setInterval(Do_a_Frame, 1000 / FPS); // this starts the Do_a_Frame function running 40 times per second
+  addEventListener("keydown", keyDownHandler); //listen for the press of a key
+  addEventListener("keyup", keyUpHandler); //listen for the release of a key
+
+  //---------------------------------------------------------------------------------------------------------------------
+  // The functions below handle pressing of keys
+
+  function keyDownHandler(event) {
+    // get the keyCode
+    switch (event.keyCode) {
+      // "up arrow" key
+      case 38:
+        // set upArrowPressed = true
+        upArrowPressed = true;
+        break;
+      // "down arrow" key
+      case 40:
+        downArrowPressed = true;
+        break;
+      case 87:
+        wPressed = true;
+        break;
+      case 83:
+        sPressed = true;
+        break;
+      case 32:
+        if (game_over) {
+          restart_game()
+        } //sPressed = true;
+        break;
+      case 77:
+        if (game_over) {
+          startGame();
+        } //sPressed = true;
+        break;
+    }
+  }
+
+  // gets activated when we release the key
+  function keyUpHandler(event) {
+    switch (event.keyCode) {
+      // "up arraow" key
+      case 38:
+        upArrowPressed = false;
+        break;
+      // "down arrow" key
+      case 40:
+        downArrowPressed = false;
+        break;
+      case 87:
+        wPressed = false;
+        break;
+      case 83:
+        sPressed = false;
+        break;
+    }
+  }
+//------------------------------------------------------------------------------------------------------
+
+</script>
+
+</html>
