@@ -12,6 +12,21 @@
     <!--Just a simple 800 by 600 canvas on the page to start with - with a border-->
     <canvas id="myCanvas" width="800" height="600" style="border:1px solid red;"></canvas>
 
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: ivory;
+        }
+
+        #myCanvas {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 1px solid red;
+        }
+    </style>
+
 </body>
 
 <script>
@@ -31,6 +46,9 @@
     const paddleHit = new Audio('https://raw.github.com/dphillips62/2021TECCARImages/blob/main/Boing.mp3?raw=true');//this doesn't work from GitHub. Not sure how to audio working
     const wallHit = new Audio('https://raw.github.com/dphillips62/2021TECCARImages/blob/main/DrumBass.mp3?raw=true');
     const oops = new Audio('https://github.com/dphillips62/2021TECCARImages/blob/main/Oops.mp3');
+
+    myCanvas.width = canvasw
+    myCanvas.height = canvash
 
 
     //Set up the paddle - it calls the paddles function and sets up the starting position
