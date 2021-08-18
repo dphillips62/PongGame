@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pong Game</title>
+</head>
+
+<body>
+
+  <div class="jumbtron">
+    <div class="container">
+      <div class="text-center">
+        <div class="intro" id="theIntro">
+          <h1>Welcome to my Pong game!!!</h1>
+          <h4> Want to play? First to 5 games wins. Press the button below</h4>
+          <img src="https://www.cityam.com/wp-content/uploads/2019/07/Screen-Shot-2019-07-24-at-18.31.17.png" alt=""
+            width="300" height="300">
+          <br>
+          <br>
+          <button class="btn btn-primary btn-lg" onclick="clearIntro()">Click to start</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="jumbtron">
+    <div class="container">
+      <div class="text-center">
+        <div id="difficultyLevel"><br>
+          <h2>What level would you like to play at?</h2>
+          <br>
+          <br>
+          <button class="btn btn-primary btn-lg" onclick="easyLevel()">Easy Level</button>
+          <br>
+          <BR>
+          <button class="btn btn-primary btn-lg" onclick="hardLevel()">Hard Level</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="main">
+    <!--<canvas id="myCanvas" width=100 height=400
+      style="background:url('https://raw.githubusercontent.com/dphillips62/2021TECCARImages/main/DPHPongBackground.png'); background-size: cover">
+    </canvas>-->
+    <br>
+    <br>
+    <button onclick="startGame()">Return to Main Menu</button>
+  </div>
+
+  <style>
+    #myCanvas {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+    integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+</body>
+
+<script>
+  //----------Set up the variables used in the game--------------------------------------------------------------
+
+  var introDiv = document.getElementById("theIntro")
+  var main = document.getElementById("main")
+  var diffLevel = document.getElementById("difficultyLevel")
+
+
+  //---------------This runs automatically when the page loads------------------------------------------------------
+
+  document.body.onload = function () {
+    main.style.display = "none";
+    diffLevel.style.display = "none";
+    introDiv.style.display = "block";
+    diffLevel.style.display = "none"
+  }
+
+  //-------------Show and hide divs for intro, difficulty levels and main game--------------------------------------------------------
+
+  function startGame() {
+    introDiv.style.display = "block" //shows the div
+    main.style.display = "none" //hides the div
+    diffLevel.style.display = "none"
+  }
+
+  function clearIntro() {
+    introDiv.style.display = "none"
+    diffLevel.style.display = "block"
+    main.style.display = "none"
+  }
+
+  // these functions run when the buttons are pressed and they change the size of ball, paddle size and speed of ball.
+
+  function easyLevel() {
+    introDiv.style.display = "none"
+    diffLevel.style.display = "none"
+    main.style.display = "block"
+    paddleHeight = 100;
+    paddleWidth = 20;
+    ballRadius = 30;
+    gameSpeed = 8;
+
+  }
+
+  function hardLevel() {
+    introDiv.style.display = "none"
+    diffLevel.style.display = "none"
+    main.style.display = "block"
+    paddleHeight = 50;
+    paddleWidth = 20;
+    ballRadius = 20;
+    gameSpeed = 15;
+
+  }
+  addEventListener("keydown", keyDownHandler); //listen for the press of a key
+  addEventListener("keyup", keyUpHandler); //listen for the release of a key
+
+  //---------------------------------------------------------------------------------------------------------------------
+  // The functions below handle pressing of keys
+
+  function keyDownHandler(event) {
+    // get the keyCode
+    switch (event.keyCode) {
+      // "up arrow" key
+      case 38:
+        // set upArrowPressed = true
+        upArrowPressed = true;
+        break;
+      // "down arrow" key
+      case 40:
+        downArrowPressed = true;
+        break;
+      case 87:
+        wPressed = true;
+        break;
+      case 83:
+        sPressed = true;
+        break;
+      case 32:
+        if (game_over) {
+          restart_game()
+        } //sPressed = true;
+        break;
+      case 77:
+        if (game_over) {
+          startGame();
+        } //sPressed = true;
+        break;
+    }
+  }
+
+  // gets activated when we release the key
+  function keyUpHandler(event) {
+    switch (event.keyCode) {
+      // "up arraow" key
+      case 38:
+        upArrowPressed = false;
+        break;
+      // "down arrow" key
+      case 40:
+        downArrowPressed = false;
+        break;
+      case 87:
+        wPressed = false;
+        break;
+      case 83:
+        sPressed = false;
+        break;
+    }
+  }
+//------------------------------------------------------------------------------------------------------
+
+</script>
+
+</html>
