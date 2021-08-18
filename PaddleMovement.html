@@ -25,8 +25,8 @@
     var paddleWidth = 200
     var ballRadius = 25
     var gameSpeed = 10; //speed of the game - will make the ball faster or slower
-    var canvasw = window.innerWidth;
-    var canvash = window.innerHeight;
+    //var canvasw = window.innerWidth;
+    // canvash = window.innerHeight;
 
     const paddleHit = new Audio('https://raw.github.com/dphillips62/2021TECCARImages/blob/main/Boing.mp3?raw=true');//this doesn't work from GitHub. Not sure how to audio working
     const wallHit = new Audio('https://raw.github.com/dphillips62/2021TECCARImages/blob/main/DrumBass.mp3?raw=true');
@@ -41,7 +41,7 @@
     function paddles(img_url) {
         this.x = myCanvas.width / 2 - (paddleWidth / 2); //This is the starting x coordinate for the paddle (Middle of screen)
         this.y = myCanvas.height / 2 - (paddleHeight / 2); //This is the starting y coordinate for the paddle (Middle of screen)
-        this.visible = true
+        //this.visible = true
         this.MyImg = new Image();
         this.MyImg.src = img_url; //this sets the image
     }
@@ -66,6 +66,7 @@
             return true;
         }
         return false;
+        //Hello William
     }
 
 

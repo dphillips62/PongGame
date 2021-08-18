@@ -16,8 +16,8 @@
         <div class="intro" id="theIntro">
           <h1>Welcome to my Pong game!!!</h1>
           <h4> Want to play? First to 5 games wins. Press the button below</h4>
-          <img src="https://www.cityam.com/wp-content/uploads/2019/07/Screen-Shot-2019-07-24-at-18.31.17.png"
-            alt="" width="300" height="300">
+          <img src="https://www.cityam.com/wp-content/uploads/2019/07/Screen-Shot-2019-07-24-at-18.31.17.png" alt=""
+            width="300" height="300">
           <br>
           <br>
           <button class="btn btn-primary btn-lg" onclick="clearIntro()">Click to start</button>
@@ -104,6 +104,15 @@
     diffLevel.style.display = "none"
   }
 
+    //------------Get the images from Git Hub nd assign them using the templates below-----------------------------------------
+
+    var leftPaddle = new paddles(
+    "https://raw.githubusercontent.com/dphillips62/2021TECCARImages/main/Paddle.png"
+  ); // The paddle
+  var rightPaddle = new paddles(
+    "https://raw.githubusercontent.com/dphillips62/2021TECCARImages/main/Paddle.png"
+  );
+
   //------------Template for the paddles--------------------------------------------------------------------------
   function paddles(img_url) {
     this.x = 0;
@@ -112,6 +121,12 @@
     this.MyImg = new Image();
     this.MyImg.src = img_url;
   }
+
+  
+  // The ball
+  var theBall = new MyBall(
+    "https://raw.githubusercontent.com/dphillips62/2021TECCARImages/main/SoccerBall.png"
+  );
 
   //------------Template for the ball----------------------------------------------------------------------------
   function MyBall(img_url) {
@@ -123,20 +138,6 @@
     this.MyImg = new Image();
     this.MyImg.src = img_url;
   }
-
-  //------------Get the images from Git Hub nd assign them using the templates above-----------------------------------------
-
-  var leftPaddle = new paddles(
-    "https://raw.githubusercontent.com/dphillips62/2021TECCARImages/main/Paddle.png"
-  ); // The paddle
-  var rightPaddle = new paddles(
-    "https://raw.githubusercontent.com/dphillips62/2021TECCARImages/main/Paddle.png"
-  );
-  // The ball
-  var theBall = new MyBall(
-    "https://raw.githubusercontent.com/dphillips62/2021TECCARImages/main/SoccerBall.png"
-  );
-
 
   //-------------Show and hide divs for intro, difficulty levels and main game--------------------------------------------------------
 
@@ -178,8 +179,7 @@
 
   function TouchLeft(thing1, thing2) { //touching left paddle? Thing1 will be the paddle, thing2 is the ball
     // This function detects whether two MySprites are touching - very useful function
-    if (
-      thing2.y >= thing1.y && thing2.y <= (thing1.y + paddleHeight) && thing2.x <= (0 + ballRadius)) {
+    if (thing2.y >= thing1.y && thing2.y <= (thing1.y + paddleHeight) && thing2.x <= (0 + ballRadius)) {
       return true;
     }
     return false;
@@ -247,7 +247,7 @@
 
   function Do_a_Frame() {
 
-    ctx.canvas.width = window.innerWidth - 50;
+    ctx.canvas.width = window.innerWidth - 50; //draw the canvas again - 40 times per second
     ctx.canvas.height = window.innerHeight - 50;
     ctx.clearRect(0, 0, myCanvas.width, myCanvas.height); // clear the background
     ShowScore(); // show the score
@@ -264,14 +264,17 @@
       ShowGameOver();
     } else {
 
-      leftPaddle.x = 10; // ensure left paddle always at the left
-      rightPaddle.x = myCanvas.width - paddleWidth - 10; //ensure right paddle is always against the right hand side of screen
+      theBall.x = theBall.x + theBall.velocity_x;
+      theBall.y = theBall.y + theBall.velocity_y; // move the thing
+
+      leftPaddle.x = 10; // ******** ensure left paddle always at the left
+      rightPaddle.x = myCanvas.width - paddleWidth - 10; //******** ensure right paddle is always against the right hand side of screen
 
       if (wPressed && leftPaddle.y > 0) {
-        leftPaddle.y = leftPaddle.y - 15; //if user has pressed w - left paddle goes up
+        leftPaddle.y = leftPaddle.y - 15; //if user has pressed w - left paddle goes up as long as it is not at the top of the screen
       }
       if (sPressed && leftPaddle.y < (myCanvas.height - paddleHeight)) {
-        leftPaddle.y = leftPaddle.y + 15; //if user has pressed s - left paddle goes down
+        leftPaddle.y = leftPaddle.y + 15; //if user has pressed s - left paddle goes down as long as it is not off the bottom of the screen
       }
       if (upArrowPressed && rightPaddle.y > 0) {
         rightPaddle.y = rightPaddle.y - 15; //if user has pressed uparrow - right paddle goes up
@@ -280,13 +283,13 @@
         rightPaddle.y = rightPaddle.y + 15; //if user has pressed downarrow - right paddle goes down
       }
 
-      if (theBall.y < 0 || theBall.y >= myCanvas.height - ballRadius) { //bounce off the top or bottom
+      if (theBall.y < 0 || theBall.y >= myCanvas.height - ballRadius) { //ball has hit the top or the bottom of the screen so bounce off
         theBall.velocity_y = -theBall.velocity_y;
         wallHit.play();
       }
 
-      if (TouchLeft(leftPaddle, theBall)) {
-        theBall.velocity_x = -theBall.velocity_x; //bounce off the left paddle
+      if (TouchLeft(leftPaddle, theBall)) { //bounce off the left paddle if it hits it
+        theBall.velocity_x = -theBall.velocity_x; 
         paddleHit.play()
       } else {
         if (theBall.x < 0) { //if the ball goes off the left side of screen
@@ -298,7 +301,7 @@
           oops.play()
         }
       }
-      if (TouchRight(rightPaddle, theBall)) { //bounce off the right paddle
+      if (TouchRight(rightPaddle, theBall)) { //bounce off the right paddle if it hits it
         theBall.velocity_x = -theBall.velocity_x;
         paddleHit.play()
       } else {
@@ -312,29 +315,12 @@
         }
       }
 
-      //these call the functions that move the paddles and ball
-      leftPaddle.Do_Paddle_Things();
-      rightPaddle.Do_Paddle_Things();
-      theBall.Do_Ball_Things();
+      //finally - lets draw the paddles and ball back on the canvas
+      ctx.drawImage(leftPaddle.MyImg, leftPaddle.x, leftPaddle.y, paddleWidth, paddleHeight);
+      ctx.drawImage(rightPaddle.MyImg, rightPaddle.x, rightPaddle.y, paddleWidth, paddleHeight);
+      ctx.drawImage(theBall.MyImg, theBall.x, theBall.y, ballRadius, ballRadius);
     }
   }
-//I just changed thinkgs
-  //----------These draw the paddles and ball--------------------------------------------------------------------------
-
-  paddles.prototype.Do_Paddle_Things = function () {
-    if (this.visible) ctx.drawImage(this.MyImg, this.x, this.y, paddleWidth, paddleHeight); // draw the thing
-  };
-
-  MyBall.prototype.Do_Ball_Things = function () {
-    if (this.visible) ctx.drawImage(this.MyImg, this.x, this.y, ballRadius, ballRadius); // draw the thing
-    this.x = this.x + this.velocity_x;
-    this.y = this.y + this.velocity_y; // move the thing
-  };
-
-
-
-  //---These run as soon as the game loads---------------------------------------------------------------------------------
-
 
   setInterval(Do_a_Frame, 1000 / FPS); // this starts the Do_a_Frame function running 40 times per second
   addEventListener("keydown", keyDownHandler); //listen for the press of a key
