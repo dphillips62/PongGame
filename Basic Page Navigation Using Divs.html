@@ -9,36 +9,38 @@
 </head>
 
 <body>
-  <div class="intro" id="theIntro">
-  
-          <h1>Welcome to my Pong game!!!</h1>
-          <h4> Want to play? First to 5 games wins. Press the button below</h4>
-          <img src="https://www.cityam.com/wp-content/uploads/2019/07/Screen-Shot-2019-07-24-at-18.31.17.png" alt=""
-            width="300" height="300">
-          <br>
-          <br>
-          <button class="btn btn-primary btn-lg" onclick="clearIntro()">Click to start</button>
+  <!--***************This is the body where all the objects yo see on the screen will go*************************-->
 
+  <!-- Here is the intro div-------------------------------------------------------------------------------------------->
+
+  <div class="intro" id="theIntro">
+    <h1>Welcome to my Pong game!!!</h1>
+    <h4> Want to play? First to 5 games wins. Press the button below</h4>
+    <img src="https://www.cityam.com/wp-content/uploads/2019/07/Screen-Shot-2019-07-24-at-18.31.17.png" alt=""
+      width="300" height="300">
+    <br>
+    <br>
+    <button class="btn btn-primary btn-lg" onclick="clearIntro()">Click to start</button>
   </div>
+
+  <!-- Here is the level of difficulty div------------------------------------------------------------------------------->
 
   <div id="difficultyLevel">
-    
-          <br>
-          <h2>What level would you like to play at?</h2>
-          <br>
-          <br>
-          <button  onclick="easyLevel()">Easy Level</button>
-          <br>
-          <BR>
-          <button onclick="hardLevel()">Hard Level</button>
- 
+    <br>
+    <h2>What level would you like to play at?</h2>
+    <br>
+    <br>
+    <button onclick="easyLevel()">Easy Level</button>
+    <br>
+    <BR>
+    <button onclick="hardLevel()">Hard Level</button>
   </div>
 
-  <div id="main">
+  <!-- Here is the main div where you would put the Canvas and play the game---------------------------------------------->
 
+  <div id="main">
     <br>
     <button onclick="startGame()">Return to Main Menu</button>
-
   </div>
 
   <style>
@@ -46,9 +48,12 @@
   </style>
 
 
-</body>
+</body> <!-- This is the end of the body - all your objects on the page would go in the body section above-->
 
 <script>
+
+  //********************This is the script area where all your javascript goes.***********************************
+
   //----------Set up the variables used in the game--------------------------------------------------------------
 
   var introDiv = document.getElementById("theIntro")
@@ -160,6 +165,6 @@
   }
 //------------------------------------------------------------------------------------------------------
 
-</script>
+</script> <!-- ***********************This is the end of the script tag*******************************-->
 
 </html>
